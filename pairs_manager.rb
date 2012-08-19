@@ -46,7 +46,7 @@ class PairsManager
       attempted_indices[partner_index] = true
       potential_partner = @players[@player_names[partner_index]]
       partner_found = true if potential_partner.available?(player, day_number)
-      raise ImpossibleScenarioException if exhausted_partners?(attempted_indices)
+      raise ImpossibleScenarioException if exhausted_partners?(attempted_indices) && !partner_found
     end
     partner = @players[@player_names[partner_index]]
     player.add_partner(partner)
