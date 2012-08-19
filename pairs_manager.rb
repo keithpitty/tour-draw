@@ -5,8 +5,6 @@ require_relative 'player'
 
 class PairsManager
 
-  attr :player_partners
-
   def initialize(players, courses)
     @player_names = players
     @courses = courses
