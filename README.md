@@ -1,0 +1,1 @@
+A little script I wrote to help organise pairs in a golf trip. The aim is to ensure no player is paired with the same player more than once.
