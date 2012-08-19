@@ -42,11 +42,11 @@ class PairsManager
       random_index = rand(@player_names.length)
       next if attempted_indices[random_index]
       attempted_indices[random_index] = true
-      potential_partner = @players[@player_names[random_index]]
-      partner_found = true if potential_partner.available?(player, day_number)
-      raise ImpossibleScenarioException if exhausted_partners?(attempted_indices) && !partner_found
+      partner = @players[@player_names[random_index]]
+      partner_found = true if partner.available?(player, day_number)
+      raise ImpossibleScenarioException if exhausted_partners?(attempted_indices) && 
+                                          !partner_found
     end
-    partner = @players[@player_names[random_index]]
     player.add_partner(partner)
     partner.add_partner(player)
     @daily_pairs[day_number -  1] << "#{player.name} & #{partner.name}"
