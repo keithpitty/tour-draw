@@ -1,12 +1,14 @@
 class ImpossibleScenarioException < Exception
 end 
 
+require_relative 'player'
+
 class PairsManager
 
   attr :player_partners
 
   def initialize(players, courses)
-    @players = players
+    @player_names = players
     @courses = courses
     reset_pairs
   end
@@ -14,9 +16,9 @@ class PairsManager
   def choose_pairs
     begin
       (1..@courses.length).each do |day_number|
-        (0..(@players.length - 1)).each do |index|
-          player = @players[index]
-          choose_partner(day_number, index) unless player_taken?(day_number, player)
+        (0..(@player_names.length - 1)).each do |index|
+          player = @players[@player_names[index]]
+          choose_partner(day_number, index) unless player.taken_for_day?(day_number)
         end
         @daily_pairs[day_number - 1].shuffle!
       end
@@ -35,40 +37,30 @@ class PairsManager
   private
 
   def choose_partner(day_number, player_index)
-    player = @players[player_index]
+    player = @players[@player_names[player_index]]
     partner_found = false
-    partner_index = 0
     attempted_indices = { player_index => true }
     until partner_found do
-      partner_index = rand(@players.length)
+      partner_index = rand(@player_names.length)
       next if attempted_indices[partner_index]
       attempted_indices[partner_index] = true
-      potential_partner = @players[partner_index]
-      partner_found = true unless already_played_with?(player, potential_partner) || 
-                                    player_taken?(day_number, potential_partner)
+      potential_partner = @players[@player_names[partner_index]]
+      partner_found = true if potential_partner.available?(player, day_number)
       raise ImpossibleScenarioException if exhausted_partners?(attempted_indices)
     end
-    partner = @players[partner_index]
-    @player_partners[player] << partner
-    @player_partners[partner] << player
-    @daily_pairs[day_number -  1] << "#{player} & #{partner}"
-  end
-
-  def already_played_with?(player, potential_partner)
-    @player_partners[player].include? potential_partner
-  end
-
-  def player_taken?(day_number, player)
-    @player_partners[player].length == day_number
+    partner = @players[@player_names[partner_index]]
+    player.add_partner(partner)
+    partner.add_partner(player)
+    @daily_pairs[day_number -  1] << "#{player.name} & #{partner.name}"
   end
 
   def exhausted_partners?(indices)
-    (0..(@players.length - 1)).each { |index| return false unless indices[index] }
+    (0..(@player_names.length - 1)).each { |index| return false unless indices[index] }
   end
 
   def reset_pairs
-    @player_partners = {}
-    @players.each { |player| @player_partners[player] = [] }
+    @players = {}
+    @player_names.each { |name| @players[name] = Player.new(name) }
     @daily_pairs = []
     (0..(@courses.length - 1)).each { |i| @daily_pairs[i] = [] }
   end
