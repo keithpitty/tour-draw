@@ -1,0 +1,58 @@
+#!/usr/bin/env /usr/local/bin/ruby
+
+puts "Preparing to generate groups..."
+
+# Generate 4 groups of 2 players for 4 days ensuring
+# that no player is paired with the same player twice
+
+# Note: doesn't always satisfy the criteria
+
+# TODO refactor
+# TODO interrupt infinite loop if criteria aren't satisfied
+
+PLAYERS = ['Jim', 'Keith', 'Leon', 'Mark', 'Marshall', 'Murray', 'Paul', 'Peter']
+
+@player_partners = {}
+PLAYERS.each { |player| @player_partners[player] = [] }
+@daily_pairs = []
+
+def choose_partner(day_number, player_index)
+  player = PLAYERS[player_index]
+  partner_found = false
+  partner_index = 0
+  until partner_found do
+    partner_index = rand(8)
+    potential_partner = PLAYERS[partner_index]
+    partner_found = true unless partner_index == player_index ||
+                                  already_played_with?(player, potential_partner) || 
+                                  player_taken?(day_number, potential_partner)
+  end
+  partner = PLAYERS[partner_index]
+  @player_partners[player] << partner
+  @player_partners[partner] << player
+  @daily_pairs[day_number -  1] << "#{player} & #{partner}"
+end
+
+def already_played_with?(player, potential_partner)
+  @player_partners[player].include? potential_partner
+end
+
+def player_taken?(day_number, player)
+  @player_partners[player].length == day_number
+end
+
+(1..4).each do |day_number|
+  puts "Choosing pairs for day #{day_number}..."
+  @daily_pairs[day_number - 1] = []
+  (0..7).each do |index|
+    player = PLAYERS[index]
+    choose_partner(day_number, index) unless player_taken?(day_number, player)
+  end
+  @daily_pairs[day_number - 1].shuffle!
+end
+
+puts " "
+puts "Pairs for Mt Broughton: #{@daily_pairs[0].join(', ')}."
+puts "Pairs for Catalina: #{@daily_pairs[1].join(', ')}."
+puts "Pairs for Narooma: #{@daily_pairs[2].join(', ')}."
+puts "Pairs for Mollymook: #{@daily_pairs[3].join(', ')}."
