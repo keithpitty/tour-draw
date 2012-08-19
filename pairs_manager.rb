@@ -14,8 +14,8 @@ class PairsManager
   def choose_pairs
     begin
       (1..@courses.length).each do |day_number|
-        (0..(@player_names.length - 1)).each do |index|
-          player = @players[@player_names[index]]
+        @player_names.each_with_index do |name, index|
+          player = @players[name]
           choose_partner(day_number, index) unless player.taken_for_day?(day_number)
         end
         @daily_pairs[day_number - 1].shuffle!
@@ -27,7 +27,7 @@ class PairsManager
   end
 
   def report_pairs
-    (0..(@courses.length - 1)).each_with_index do | index |
+    @courses.each_index do | index |
       puts "Pairs for #{@courses[index]}: #{@daily_pairs[index].join(', ')}."
     end
   end
@@ -53,14 +53,14 @@ class PairsManager
   end
 
   def exhausted_partners?(indices)
-    (0..(@player_names.length - 1)).each { |index| return false unless indices[index] }
+    @player_names.each_index { |index| return false unless indices[index] }
   end
 
   def reset_pairs
     @players = {}
     @player_names.each { |name| @players[name] = Player.new(name) }
     @daily_pairs = []
-    (0..(@courses.length - 1)).each { |i| @daily_pairs[i] = [] }
+    @courses.each_index { |i| @daily_pairs[i] = [] }
   end
 
 end
