@@ -1,4 +1,4 @@
 class Config
-  PLAYERS = ['Jim', 'Keith', 'Leon', 'Mark', 'Marshall', 'Murray', 'Paul', 'Peter']
-  COURSES = ['Mt Broughton', 'Catalina', 'Narooma', 'Mollymook']
+  PLAYERS = ['Leon', 'Hendo', 'Murray', 'Hinesy', 'Marshall', 'Garny', 'Ozzie', 'Keith']
+  COURSES = ['Tocumwal', 'Yarrawonga Murray', 'Shepparton', 'Cobram']
 end
